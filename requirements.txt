@@ -1,0 +1,10 @@
+streamlit
+python-dotenv
+yt-dlp
+openai
+google-generativeai
+faiss-cpu
+numpy
+pymongo
+certifi
+requests
