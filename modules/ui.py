@@ -293,7 +293,7 @@ def show_processed_videos():
                                 # 입력 필드 키 변경
                                 st.session_state['tag_input_key'] = st.session_state.get('tag_input_key', 0) + 1
                                 time.sleep(1)
-                                st.experimental_rerun()
+                                st.rerun()
                             else:
                                 st.warning("태그를 추가할 수 없습니다. (최대 3개)")
                         else:
@@ -410,7 +410,7 @@ def add_tag_callback(video_id, new_tag):
             # 입력 필드 초기화
             st.session_state[f"new_tag_{video_id}"] = ""
             time.sleep(1)
-            st.experimental_rerun()
+            st.rerun()
         else:
             st.warning("태그를 추가할 수 없습니다. (최대 3개)")
     else:
