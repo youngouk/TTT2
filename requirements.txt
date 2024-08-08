@@ -8,3 +8,9 @@ numpy
 pymongo
 certifi
 requests
+asyncio
+isodate
+bcrypt
+tiktoken
+time
+scikit-learn
