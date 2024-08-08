@@ -58,7 +58,7 @@ def show_login_form():
 
     with tab2:
         new_username = st.text_input("새 사용자명", placeholder="한글 아이디도 사용이 가능해요")
-        new_password = st.text_input("새 비밀번호", type="password", placeholder="보안 적용이 안되어 있으니 평소 사용하지 않는 쉬운 비밀번호를 사용하세요")
+        new_password = st.text_input("새 비밀번호", type="password", placeholder="평소 사용하지 않는 비밀번호를 사용하세요")
         if st.button("회원가입"):
             if auth.register_user(new_username, new_password):
                 st.success("회원가입 성공! 이제 로그인할 수 있습니다.")
@@ -123,7 +123,7 @@ def show_question_form():
     user_id = st.session_state.user['_id']
 
     # 질문 모드 선택
-    question_mode = st.radio("질문 모드 선택", ["하나의 영상 기반 질문", "태그에 속한 다수 영상 기반 질문"])
+    question_mode = st.radio("질문 모드 선택", ["하나의 영상 기반 질문", "태그에 포함된 다수 영상 기반 질문"])
 
     if question_mode == "하나의 영상 기반 질문":
         show_individual_video_question(user_id)
@@ -251,7 +251,7 @@ def show_processed_videos():
             with st.container():
                 # 비디오 제목 (카드 형태)
                 st.markdown(
-                    f'<i class="fab fa-youtube" style="margin-right: 5px; color: red;"></i>📹 <span style="font-size: 19px;">**{video.get("title", "Unknown")}**</span>',
+                    f'<i class="fab fa-youtube" style="margin-right: 5px; color: red;"></i>📹 <span style="font-size: 20px;">**{video.get("title", "Unknown")}**</span>',
                     unsafe_allow_html=True)
 
                 # 메타데이터 (일렬 배치)
@@ -304,7 +304,7 @@ def show_processed_videos():
                 # 버튼 배치 (가로 배치)
                 col1, col2 = st.columns(2)
                 with col1:
-                    if st.button("채팅하기", key=f"chat_{video['video_id']}"):
+                    if st.button("질문하기", key=f"chat_{video['video_id']}"):
                         st.session_state.page = 'chat'
                         st.session_state.selected_video_id = video['video_id']
                         st.rerun()
