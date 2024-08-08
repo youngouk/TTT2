@@ -16,11 +16,11 @@ def show_sidebar():
             st.rerun()
 
         st.write("---")
-        if st.button("새 비디오 처리"):
+        if st.button("새 영상 처리"):
             st.session_state.page = 'process_video'
         if st.button("질문하기"):
             st.session_state.page = 'ask_question'
-        if st.button("처리된 비디오 보기"):
+        if st.button("처리된 영상 목록보기"):
             st.session_state.page = 'view_videos'
 
 def show_login_form():
@@ -68,39 +68,39 @@ def show_login_form():
     st.markdown('</div>', unsafe_allow_html=True)
 
 def show_video_processing_form():
-    st.header("새 YouTube 비디오 처리")
+    st.header("새 YouTube 영상 처리")
     st.warning(f"주의: 현재 {video_processing.MAX_VIDEO_DURATION // 60}분 이하의 영상만 처리 가능합니다.")
 
-    video_url = st.text_input("YouTube 비디오 URL 입력")
-    if st.button("비디오 처리", key="process_video_button"):
+    video_url = st.text_input("YouTube 영상 URL 입력")
+    if st.button("영상 처리", key="process_video_button"):
         if not video_url:
-            st.error("YouTube 비디오 URL을 입력해주세요.")
+            st.error("YouTube 영상 URL을 입력해주세요.")
             return
 
         try:
             user_id = st.session_state.user['_id']
-            with st.spinner("비디오 정보 가져오는 중... ⏳"):
+            with st.spinner("영상 정보 가져오는 중... ⏳"):
                 title, channel, duration = video_processing.get_video_info(video_url)
                 estimated_time = (duration // 600) * 60 + (duration % 600) // 10  # 10분당 60초 기준 계산
                 st.info(f"**{title}** ({channel}) - 예상 처리 시간: 약 {estimated_time}초 ⏰")
 
-            # 기존에 처리된 비디오인지 확인
+            # 기존에 처리된 영상인지 확인
             _, video_id = video_processing.extract_video_id_and_process(video_url)
             existing_video = video_processing.get_existing_video(video_id)
 
             if existing_video:
-                st.info(f"이 비디오는 이미 처리되었습니다. 기존 데이터를 사용합니다.")
+                st.info(f"이 영상는 이미 처리되었습니다. 기존 데이터를 사용합니다.")
                 video_processing.update_user_for_video(existing_video['_id'], user_id)
                 video_id = existing_video['_id']
             else:
-                progress_bar = st.progress(0, text="비디오 처리 중... 🏃")
+                progress_bar = st.progress(0, text="영상 처리 중... 🏃")
                 start_time = time.time()
 
                 video_id = video_processing.process_video(video_url, user_id, progress_bar)
 
                 end_time = time.time()
                 elapsed_time = end_time - start_time
-                st.success(f"비디오 처리 완료! 🎉  ({video_processing.format_time(elapsed_time)} 소요)")
+                st.success(f"영상 처리 완료! 🎉  ({video_processing.format_time(elapsed_time)} 소요)")
 
             update_processed_videos(user_id)
 
@@ -115,11 +115,11 @@ def show_video_processing_form():
                     st.session_state.next_page = "view_videos"
 
         except Exception as e:
-            st.error(f"비디오 처리 중 오류 발생: {str(e)}")
+            st.error(f"영상 처리 중 오류 발생: {str(e)}")
 
 
 def show_question_form():
-    st.header("비디오에 대해 질문하기")
+    st.header("영상에 대해 질문하기")
     user_id = st.session_state.user['_id']
 
     # 질문 모드 선택
@@ -135,7 +135,7 @@ def show_individual_video_question(user_id):
     user_videos = database.get_user_videos(user_id)
     if user_videos:
         video_options = {f"{v['title']} - {v['channel']}": v['video_id'] for v in user_videos}
-        selected_video_title = st.selectbox("비디오 선택", list(video_options.keys()), key="individual_video_selector")
+        selected_video_title = st.selectbox("영상 선택", list(video_options.keys()), key="individual_video_selector")
         selected_video_id = video_options[selected_video_title]
 
         question = st.text_input("질문을 입력하세요")
@@ -148,13 +148,13 @@ def show_individual_video_question(user_id):
                             response = nlp.generate_response(question, [video_data[0]['transcript']])
                             display_response(question, response)
                         else:
-                            st.error("선택한 비디오의 트랜스크립트를 찾을 수 없습니다.")
+                            st.error("선택한 영상의 트랜스크립트를 찾을 수 없습니다.")
                     except Exception as e:
                         st.error(f"답변 생성 중 오류가 발생했습니다: {str(e)}")
             else:
                 st.warning("질문을 입력해주세요.")
     else:
-        st.info("처리된 비디오가 없습니다. 먼저 비디오를 처리해주세요.")
+        st.info("처리된 영상이 없습니다. 먼저 영상을 처리해주세요.")
 
 
 def show_tag_based_question(user_id):
@@ -164,9 +164,9 @@ def show_tag_based_question(user_id):
     if selected_tags:
         videos = select_videos_by_tags(selected_tags)
         if videos:
-            st.write(f"선택된 비디오 수: {len(videos)}")
+            st.write(f"선택된 영상 수: {len(videos)}")
             video_titles = [f"{v['title']} - {v['channel']}" for v in videos]
-            st.write("선택된 비디오:", ", ".join(video_titles))
+            st.write("선택된 영상:", ", ".join(video_titles))
 
             question = st.text_input("질문을 입력하세요")
             if st.button("답변 받기"):
@@ -179,15 +179,15 @@ def show_tag_based_question(user_id):
                                 response = nlp.generate_response(question, transcripts)
                                 display_response(question, response)
                             else:
-                                st.error("선택한 비디오의 트랜스크립트를 찾을 수 없습니다.")
+                                st.error("선택한 영상의 트랜스크립트를 찾을 수 없습니다.")
                         except Exception as e:
                             st.error(f"답변 생성 중 오류가 발생했습니다: {str(e)}")
                 else:
                     st.warning("질문을 입력해주세요.")
         else:
-            st.warning("선택한 태그에 해당하는 비디오가 없습니다.")
+            st.warning("선택한 태그에 해당하는 영상가 없습니다.")
     else:
-        st.info("태그를 선택하여 비디오를 필터링하세요.")
+        st.info("태그를 선택하여 영상를 필터링하세요.")
 
 
 def display_response(question, response):
@@ -201,7 +201,7 @@ def select_videos_by_tags(tags):
 
 
 def show_processed_videos():
-    st.header("처리된 비디오 목록", divider=True)
+    st.header("처리된 영상목록", divider=True)
     user_id = st.session_state.user['_id']
     logger.info(f"User ID: {user_id}")
 
@@ -220,7 +220,7 @@ def show_processed_videos():
         today = datetime.now().date()
         date_range = st.date_input("기간 선택", [today, today])
     with col3:
-        show_no_tags = st.checkbox("태그 없는 비디오만 표시")
+        show_no_tags = st.checkbox("태그 없는 영상만 표시")
 
 
     # 필터 적용
@@ -240,7 +240,7 @@ def show_processed_videos():
 
     logger.info(f"Date range: {start_date} to {end_date}")
 
-    # 모든 비디오를 가져옴 (필터 적용)
+    # 모든 영상를 가져옴 (필터 적용)
     valid_videos = database.get_user_videos(user_id, selected_tags=selected_tags, start_date=start_date,
                                             end_date=end_date, show_no_tags=show_no_tags)
 
@@ -249,7 +249,7 @@ def show_processed_videos():
     if valid_videos:
         for video in valid_videos:
             with st.container():
-                # 비디오 제목 (카드 형태)
+                # 영상 제목 (카드 형태)
                 st.markdown(
                     f'<i class="fab fa-youtube" style="margin-right: 5px; color: red;"></i>📹 <span style="font-size: 20px;">**{video.get("title", "Unknown")}**</span>',
                     unsafe_allow_html=True)
@@ -314,7 +314,7 @@ def show_processed_videos():
                         st.session_state.selected_video_id = video['video_id']
                         st.rerun()
 
-            st.markdown("---")  # 비디오 사이에 구분선 추가
+            st.markdown("---")  # 영상 사이에 구분선 추가
 
     else:
         logger.warning("No videos found for the user.")
@@ -322,13 +322,13 @@ def show_processed_videos():
 
 
 def show_chat_page():
-    st.header("비디오 채팅")
+    st.header("영상 채팅")
     if st.session_state.selected_video_id:
         # selected_video_id를 리스트로 감싸서 전달
         video_data = database.get_video_info_from_db([st.session_state.selected_video_id])
         if video_data and len(video_data) > 0:
             video = video_data[0]  # 첫 번째 (유일한) 결과를 사용
-            st.subheader(f"비디오: {video.get('title', 'Unknown')}")
+            st.subheader(f"영상: {video.get('title', 'Unknown')}")
 
             question = st.text_input("질문을 입력하세요")
             if st.button("답변 받기"):
@@ -345,11 +345,11 @@ def show_chat_page():
                 else:
                     st.warning("질문을 입력해주세요.")
         else:
-            st.error("선택한 비디오의 정보를 찾을 수 없습니다.")
+            st.error("선택한 영상의 정보를 찾을 수 없습니다.")
     else:
-        st.error("선택된 비디오가 없습니다.")
+        st.error("선택된 영상가 없습니다.")
 
-    if st.button("비디오 목록으로 돌아가기"):
+    if st.button("영상 목록으로 돌아가기"):
         st.session_state.page = "view_videos"
         st.session_state.selected_video_id = None
         st.rerun()
@@ -369,7 +369,7 @@ def get_valid_videos(user_id):
     return [video for video in all_videos if video.get('title') and video.get('channel')]
 
 def show_full_transcript():
-    st.header("비디오 전체 내용보기")
+    st.header("영상 전체 내용보기")
     if st.session_state.selected_video_id:
         # selected_video_id를 리스트로 감싸서 전달
         video_data = database.get_video_info_from_db([st.session_state.selected_video_id])
@@ -380,11 +380,11 @@ def show_full_transcript():
             st.write("전문:")
             st.text_area("", value=video.get('transcript', ''), height=400, disabled=True)
         else:
-            st.error("선택한 비디오의 정보를 찾을 수 없습니다.")
+            st.error("선택한 영상의 정보를 찾을 수 없습니다.")
     else:
-        st.error("선택된 비디오가 없습니다.")
+        st.error("선택된 영상가 없습니다.")
 
-    if st.button("비디오 목록으로 돌아가기"):
+    if st.button("영상 목록으로 돌아가기"):
         st.session_state.page = "view_videos"
         st.session_state.selected_video_id = None
         st.rerun()
