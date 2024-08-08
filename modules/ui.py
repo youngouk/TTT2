@@ -104,15 +104,30 @@ def show_video_processing_form():
 
             update_processed_videos(user_id)
 
-            # 처리 완료 후 버튼 표시
-            col1, col2 = st.columns(2)
-            with col1:
-                if st.button("질문하기", key="ask_question_button"):
-                    st.session_state.next_page = "ask_question"
-                    st.session_state.current_selected_video_id = video_id
-            with col2:
-                if st.button("영상 목록 보기", key="view_videos_button"):
-                    st.session_state.next_page = "view_videos"
+            # 여기서 버튼 대신 안내 메시지 표시
+            st.markdown(
+                '<p style="font-size: 14px; color: #31333F; background-color: #F0F2F6; padding: 10px; border-radius: 5px; margin-bottom: 10px;">'
+                'ℹ️ 처리된 영상을 확인하려면 메뉴의 <strong>[처리된 영상 목록보기]</strong> 선택'
+                '</p>',
+                unsafe_allow_html=True
+            )
+
+            st.markdown(
+                '<p style="font-size: 14px; color: #31333F; background-color: #F0F2F6; padding: 10px; border-radius: 5px;">'
+                'ℹ️ 영상에 대해 질문하려면 메뉴의 <strong>[질문하기]</strong> 를 선택'
+                '</p>',
+                unsafe_allow_html=True
+            )
+
+            # # 처리 완료 후 버튼 표시
+            # col1, col2 = st.columns(2)
+            # with col1:
+            #     if st.button("질문하기", key="ask_question_button"):
+            #         st.session_state.next_page = "ask_question"
+            #         st.session_state.current_selected_video_id = video_id
+            # with col2:
+            #     if st.button("영상 목록 보기", key="view_videos_button"):
+            #         st.session_state.next_page = "view_videos"
 
         except Exception as e:
             st.error(f"영상 처리 중 오류 발생: {str(e)}")
