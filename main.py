@@ -12,8 +12,8 @@ def initialize_session_state():
         st.session_state.selected_video_id = None
 
 def main():
-    st.set_page_config(page_title="YouTube To Text", page_icon="🎥")
-    st.title("YouTube To Text")
+    st.set_page_config(page_title="AskOnTube", page_icon="🎥")
+    st.title("AskOnTube")
 
     initialize_session_state()
 
