@@ -12,8 +12,8 @@ def initialize_session_state():
         st.session_state.selected_video_id = None
 
 def main():
-    st.set_page_config(page_title="AskOnTube", page_icon="🎥")
-    st.title("AskOnTube")
+    st.set_page_config(page_title="AskOnTube", page_icon="🎥", layout="wide")
+    ui.show_header()
 
     initialize_session_state()
 
