@@ -2,13 +2,69 @@ import streamlit as st
 from modules import auth, video_processing, database, nlp
 import time
 import logging
-from datetime import datetime, timedelta  # timedelta를 추가로 import
+import os
+from datetime import datetime, timedelta
+from PIL import Image
+
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+
+def show_logo(width=80):
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    logo_path = os.path.join(script_dir, '..', 'assets', 'logo.png')
+    if os.path.exists(logo_path):
+        logo = Image.open(logo_path)
+        return logo
+    else:
+        st.warning("로고 파일을 찾을 수 없습니다.")
+        return None
+
+
+def show_header():
+    st.markdown("""
+    <style>
+    .header-container {
+        display: flex;
+        align-items: center;
+        padding: 10px;
+    }
+    .logo-img {
+        width: 80px;
+        margin-right: 20px;
+    }
+    .header-title {
+        color: white;
+        font-size: 36px;
+        font-weight: bold;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
+    logo = show_logo()
+
+    header_html = f"""
+    <div class="header-container">
+        <img src="data:image/png;base64,{image_to_base64(logo)}" class="logo-img">
+        <div class="header-title">AskOnTube</div>
+    </div>
+    """
+    st.markdown(header_html, unsafe_allow_html=True)
+
+
+def image_to_base64(image):
+    import base64
+    from io import BytesIO
+
+    buffered = BytesIO()
+    image.save(buffered, format="PNG")
+    return base64.b64encode(buffered.getvalue()).decode()
+
+
 def show_sidebar():
     with st.sidebar:
+        show_logo()  # 사이드바에 로고 표시
         st.write(f"환영합니다, {st.session_state.user['username']}님!")
         if st.button("로그아웃"):
             st.session_state.user = None
